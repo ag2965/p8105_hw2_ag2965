@@ -5,13 +5,19 @@ date: "2022-09-28"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+#Homework 2
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 
+We will first load the necessary libraries.
 library(tidyverse)
 library(readxl)
 library(haven)
 library(dplyr)
+```
+
+#Problem 1
+```{r}
 subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")%>%
   janitor::clean_names()%>%
   #convert 2 word station name etc into one word
@@ -19,4 +25,19 @@ subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv"
   mutate(entry = if_else("yes", "no",TRUE,FALSE))
 ```
 
-The subway dataset contains the following columns: the subway line, the names of the stations the line operates at, station latitude and longitude, the 11 routes served, the presence or absence of an entry and entrance type, the presence or absence of vending,  and whether the station is ADA compliant. 
+##Short description of the resulting dataset
+The subway dataset contains the following columns: the subway line, the names of the stations the line operates at, station latitude and longitude, the 11 routes served, the presence or absence of an entry and entrance type, the presence or absence of vending,  and whether the station is ADA compliant. The data steps include reading in the data, cleaning names with the janitor function, selecting only for the desired columns, and converting the entry varialbe from a character to a logical variable. 
+The resulting dimensions of the dataset are:
+These data are/are not tidy.
+
+##Answer the following questions using these data:
+How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox); the distinct function may be useful here.
+How many stations are ADA compliant?
+What proportion of station entrances / exits without vending allow entrance?
+
+#Problem 2
+```{r}
+trash = 
+  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx") %>%
+```
+
