@@ -15,5 +15,7 @@ library(dplyr)
 subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")%>%
   janitor::clean_names()%>%
   #convert 2 word station name etc into one word
-  select(line, station_name, station_latitude, station_longtitude,begins_with("route"), entrance_type, entry, vending, ADA_compliance)
+  select(line, station_name, station_latitude, station_longtitude,begins_with("route"), entrance_type, entry, vending, ADA_compliance) %>%
+  mutate(entry = if_else("yes", "no",TRUE,FALSE))
+
 ```
