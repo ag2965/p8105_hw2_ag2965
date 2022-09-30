@@ -6,10 +6,10 @@ output: github_document
 ---
 
 #Homework 2
-```{r setup, include=TRUE}
-knitr::opts_chunk$set(echo = TRUE)
 
 We will first load the necessary libraries.
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
 library(haven)
@@ -18,26 +18,101 @@ library(dplyr)
 
 #Problem 1
 ```{r}
-subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")%>%
-  janitor::clean_names()%>%
-  #convert 2 word station name etc into one word
-  select(line, station_name, station_latitude, station_longtitude,begins_with("route"), entrance_type, entry, vending, ADA) %>%
-  mutate(entry = if_else("yes", "no",TRUE,FALSE))
+subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",  col_types=cols(Route8="c", Route9="c", Route10="c", Route11="c"))%>% 
+  janitor::clean_names() %>%
+  select(line, station_name, station_latitude, station_longitude, starts_with("route"), entrance_type, entry, exit_only, vending, ada) %>%
+  mutate(entry = ifelse(entry == "YES", TRUE, FALSE)) %>%
+  mutate(vending = ifelse(vending == "YES", TRUE, FALSE)) %>%
+  mutate(exit_only = ifelse(exit_only == "Yes", TRUE, FALSE)) %>%  #How do I make these NA = FALSE**?
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route")
+view(subway)
+
+sapply(subway,class)
+
 ```
 
 ##Short description of the resulting dataset
-The subway dataset contains the following columns: the subway line, the names of the stations the line operates at, station latitude and longitude, the 11 routes served, the presence or absence of an entry and entrance type, the presence or absence of vending,  and whether the station is ADA compliant. The data steps include reading in the data, cleaning names with the janitor function, selecting only for the desired columns, and converting the entry varialbe from a character to a logical variable. 
-The resulting dimensions of the dataset are:
-These data are/are not tidy.
+The subway dataset contains the following columns: the subway line, the names of the stations the line operates at, station latitude and longitude, the 11 routes served, the presence or absence of an entry and entrance type, the presence or absence of a machine to vend tickets,  and whether the station is ADA compliant. The data steps include reading in the data, cleaning names with the janitor function, selecting only for the desired columns, and converting the entry variable from a character to a logical variable. We also had to convert columns 8-11 into from double to character variables. We had to convert entry and vending into logical variables, from YES/NO to TRUE/FALSE.
+There are `r nrow(subway)` rows and `r ncol(subway)` columns in this dataset.
+These data are tidy.
 
 ##Answer the following questions using these data:
 How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox); the distinct function may be useful here.
-How many stations are ADA compliant?
-What proportion of station entrances / exits without vending allow entrance?
 
-#Problem 2
+There are 465 distinct subway stations.
 ```{r}
-trash = 
-  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx") %>%
+distinct(subway, line, station_name)
 ```
 
+How many stations are ADA compliant?
+
+There are 5,148 ADA-compliant subway entrances.
+```{r}
+filter(subway, ada==TRUE)
+```
+
+What proportion of station entrances / exits without vending allow entrance?
+There are '=759/19283' stations with an entry without a machine for vending tickets.
+```{r}
+filter(subway, entry==TRUE)
+filter(subway, entry==TRUE,vending==FALSE)
+```
+
+There are '=550/616' stations that are exit only and don't have a machine for vending tickets.
+```{r}
+filter(subway, exit_only==TRUE)
+filter(subway, exit_only==TRUE,vending==FALSE)
+```
+
+#Problem 2
+1 and 2. Below, we are specifying the Excel file and omitting non-data entries and non-dumpster-specific data using arguments in read_excel.
+
+```{r}
+trash = 
+  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
+  janitor::clean_names() 
+  na.omit(trash)
+```
+
+3. Below, we are rounding the number of sports balls to the nearest integer and converting hte results to an integer variable (using as.integer).
+
+Read and clean the Mr. Trash Wheel sheet:
+
+1. specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
+use reasonable variable names
+2. omit rows that do not include dumpster-specific data
+3. round the number of sports balls to the nearest integer and converts the result to an integer variable (using as.integer)
+
+Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+
+#Problem 3
+```{r}
+pols_month = read_csv("p8105_hw2_data/pols-month.csv")%>%
+  janitor::clean_names()
+  select()
+  
+snp = read_csv("p8105_hw2_data/snp.csv") %>%
+  janitor::clean_names()
+  
+unemployment = read_csv("p8105_hw2_data/unemployment.csv") %>%
+  janitor::clean_names()
+```
+
+This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.
+
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.
