@@ -80,8 +80,8 @@ use reasonable variable names
 ```{r}
 mrtrash = 
   readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
-  janitor::clean_names() 
-  na.omit(mrtrash) #why does this not omit the NA values?
+  janitor::clean_names()%>%
+  na.omit(mrtrash)
 ```
 
 3. Below, we are rounding the number of sports balls to the nearest integer and converting the results to an integer variable (using as.integer).
@@ -89,13 +89,14 @@ mrtrash =
 ```{r}
 mrtrash = 
   readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
-  janitor::clean_names() 
+  janitor::clean_names()%>%
   mutate(
     dumpster=as.numeric(dumpster),
     sports_balls=round(sports_balls,digits=0)%>%as.integer())%>%
     filter(dumpster>0)
-  )
 ```
+
+as.numeric(pull(prob_2_df,logical_vector))
 
 
 Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
@@ -104,15 +105,19 @@ We will import, clean, organize the data for Professor Trash Wheel.
 ```{r}
 proftrash = 
   readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Professor Trash Wheel", range= "A2:N117")%>%
-  janitor::clean_names() 
-  na.omit(proftrash)
+  janitor::clean_names()%>%
+  na.omit(proftrash)%>%
   mutate(
     dumpster=as.numeric(dumpster),
     sports_balls=round(sports_balls,digits=0)%>%as.integer())%>%
     filter(dumpster>0)
-  )
 ```
 
+We will combine the Mr. Trash Wheel and Professor Trash Wheel datasets.
+```{r}
+mrproftrash=
+left_join(mrtrash,proftrash,by="dumpster")
+```
 
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
