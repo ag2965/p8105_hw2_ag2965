@@ -68,17 +68,6 @@ filter(subway, exit_only==TRUE,vending==FALSE)
 ```
 
 #Problem 2
-1 and 2. Below, we are specifying the Excel file and omitting non-data entries and non-dumpster-specific data using arguments in read_excel.
-
-```{r}
-trash = 
-  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
-  janitor::clean_names() 
-  na.omit(trash)
-```
-
-3. Below, we are rounding the number of sports balls to the nearest integer and converting hte results to an integer variable (using as.integer).
-
 Read and clean the Mr. Trash Wheel sheet:
 
 1. specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
@@ -86,7 +75,45 @@ use reasonable variable names
 2. omit rows that do not include dumpster-specific data
 3. round the number of sports balls to the nearest integer and converts the result to an integer variable (using as.integer)
 
+1 and 2. Below, we are specifying the Excel file and omitting non-data entries and non-dumpster-specific data using arguments in read_excel.
+
+```{r}
+mrtrash = 
+  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
+  janitor::clean_names() 
+  na.omit(mrtrash) #why does this not omit the NA values?
+```
+
+3. Below, we are rounding the number of sports balls to the nearest integer and converting the results to an integer variable (using as.integer).
+
+```{r}
+mrtrash = 
+  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Mr. Trash Wheel", range= "A2:N535")%>%
+  janitor::clean_names() 
+  mutate(
+    dumpster=as.numeric(dumpster),
+    sports_balls=round(sports_balls,digits=0)%>%as.integer())%>%
+    filter(dumpster>0)
+  )
+```
+
+
 Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
+
+We will import, clean, organize the data for Professor Trash Wheel.
+```{r}
+proftrash = 
+  readxl::read_excel("p8105_hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet="Professor Trash Wheel", range= "A2:N117")%>%
+  janitor::clean_names() 
+  na.omit(proftrash)
+  mutate(
+    dumpster=as.numeric(dumpster),
+    sports_balls=round(sports_balls,digits=0)%>%as.integer())%>%
+    filter(dumpster>0)
+  )
+```
+
+
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
