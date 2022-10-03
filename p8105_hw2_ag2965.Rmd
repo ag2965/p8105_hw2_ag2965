@@ -158,15 +158,18 @@ pols_month=
   janitor::clean_names()%>%
   separate(col=mon,into=c('year','month','day'), sep="-")%>%
 mutate(
-    month=replace(month, month == "01","January"),
-    month=replace(month, month == "02","February"),
-    month=replace(month, month == "03","March"),
-    month=replace(month, month == "04","April"),
-    month=replace(month, month == "05","May"),
-    month=replace(month, month == "06","June"),
-    month=replace(month, month == "07","July"),
-    month=replace(month, month == "08","August"),
-    month=replace(month, month == "09","September"),
+    year=as.integer(year),
+    month=as.integer(month),
+    day=as.integer(day),
+    month=replace(month, month == "1","January"),
+    month=replace(month, month == "2","February"),
+    month=replace(month, month == "3","March"),
+    month=replace(month, month == "4","April"),
+    month=replace(month, month == "5","May"),
+    month=replace(month, month == "6","June"),
+    month=replace(month, month == "7","July"),
+    month=replace(month, month == "8","August"),
+    month=replace(month, month == "9","September"),
     month=replace(month, month == "10","October"),
     month=replace(month, month == "11","November"),
     month=replace(month, month == "12","December"),
@@ -203,10 +206,9 @@ mutate(
     year=replace(year, year == "8","2008"),
     year=replace(year, year == "9","2009"),
     year=replace(year, year == "10","2010"),
-    year=replace(year, year == "11","2011"))%>%
+    year=replace(year, year == "11","2011"),
+    year=replace(year, year == "12","2012"))%>%
 arrange(year,month)
-```
-
 ```
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
@@ -214,10 +216,31 @@ Third, tidy the unemployment data so that it can be merged with the previous dat
 ```{r}
 unemployment = read_csv("p8105_hw2_data/unemployment.csv") %>%
   janitor::clean_names()%>%
-  pivot_longer()
+  pivot_longer(
+    jan:dec,
+    names_to="month",
+    values_to="unemp_rate")%>%
+mutate(
+    month=replace(month, month == "jan","January"),
+    month=replace(month, month == "feb","February"),
+    month=replace(month, month == "mar","March"),
+    month=replace(month, month == "apr","April"),
+    month=replace(month, month == "may","May"),
+    month=replace(month, month == "jun","June"),
+    month=replace(month, month == "jul","July"),
+    month=replace(month, month == "aug","August"),
+    month=replace(month, month == "sep","September"),
+    month=replace(month, month == "oct","October"),
+    month=replace(month, month == "nov","November"),
+    month=replace(month, month == "dec","December"))
 ```
 
 Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+```{r}
+pols_month_snp=left_join(snp,pols_month)
+pols_month_snp_unemp=left_join(pols_month_snp,unemployment)
+```
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
