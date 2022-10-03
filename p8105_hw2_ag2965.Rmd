@@ -134,9 +134,7 @@ proftrash =
 We will combine the Mr. Trash Wheel and Professor Trash Wheel datasets.
 ```{r}
 mrproftrash=
-left_join(mrtrash,proftrash,by="dumpster")  #how do we know to choose *_join vs.bind_rows? 
-
-bind_rows(mrtrash,proftrash)
+left_join(mrtrash,proftrash,by="dumpster")
 ```
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
@@ -174,16 +172,21 @@ mutate(
     month=replace(month, month == "11","November"),
     month=replace(month, month == "12","December"),
     president = recode(prez_gop, '1' = "gop", '0' = "dem"))%>%
-pols_month= subset(pols_month, select = -c(3,4,8))
+pols_month<-pols_month[-c(3,4,8)]
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
 ```{r}
-snp = read_csv("p8105_hw2_data/snp.csv") %>%
+snp = read_csv("p8105_hw2_data/snp.csv")%>%
   janitor::clean_names()%>%
-  separate(col=date,into=c('year','month','day'), sep="/")%>%
+  mutate(
+  date = as.Date(date, format = "%m/%d/%y")) %>%
+  separate(col=date,into=c('month','date','year'), sep="/")%>%
 mutate(
+    year=as.integer(year),
+    month=as.integer(month),
+    day=as.integer(day),
     month=replace(month, month == "1","January"),
     month=replace(month, month == "2","February"),
     month=replace(month, month == "3","March"),
@@ -221,6 +224,7 @@ unemployment = read_csv("p8105_hw2_data/unemployment.csv") %>%
     names_to="month",
     values_to="unemp_rate")%>%
 mutate(
+    year=as.integer(year),
     month=replace(month, month == "jan","January"),
     month=replace(month, month == "feb","February"),
     month=replace(month, month == "mar","March"),
@@ -233,12 +237,14 @@ mutate(
     month=replace(month, month == "oct","October"),
     month=replace(month, month == "nov","November"),
     month=replace(month, month == "dec","December"))
+
+head(unemployment)
 ```
 
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 ```{r}
-pols_month_snp=left_join(snp,pols_month)
+pols_month_snp=left_join(pols_month,snp)
 pols_month_snp_unemp=left_join(pols_month_snp,unemployment)
 ```
 
