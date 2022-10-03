@@ -128,7 +128,7 @@ proftrash =
   mutate(
     dumpster=as.numeric(dumpster),
     sports_balls=round(sports_balls,digits=0)%>%as.integer())%>%
-    filter(dumpster>0)
+filter(dumpster>0)
 ```
 
 We will combine the Mr. Trash Wheel and Professor Trash Wheel datasets.
@@ -141,9 +141,10 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 
 The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)` columns. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
 
-The total weight of trash collected by Professor Trash Wheel was 'r colSums(pull(mrproftrash, weight_tons.y, na.rm=TRUE))' #need to fix this
+The total weight of trash collected by Professor Trash Wheel was `r sum(proftrash,pull(weight_tons)`
+#need to fix this
 
-The total number of sports balls collected by Mr. Trash Wheel in 2020 was 'r colSums(pull(mrproftrash, sports_balls.x, year.x=2020, na.rm=TRUE))' #need to fix this
+The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r filter(mrtrash, year==2020)%>%pull(sports_balls.x)%>%sum()` 
 
 #Problem 3
 This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.
@@ -247,5 +248,7 @@ na.omit
 ```
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+##Need to do this##
 
 Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.
