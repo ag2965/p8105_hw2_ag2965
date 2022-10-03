@@ -139,11 +139,11 @@ left_join(mrtrash,proftrash,by="dumpster")
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
-The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)`. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
+The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)` columns. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
 
-The total weight of trash collected by Professor Trash Wheel was 'r colSums(pull(mrproftrash, weight_tons.y, na.rm=TRUE)' #need to fix this
+The total weight of trash collected by Professor Trash Wheel was 'r colSums(pull(mrproftrash, weight_tons.y, na.rm=TRUE))' #need to fix this
 
-The total number of sports balls collected by Mr. Trash Wheel in 2020 was 'r colSums(pull(mrproftrash, sports_balls.x, year.x=2020, na.rm=TRUE)' #need to fix this
+The total number of sports balls collected by Mr. Trash Wheel in 2020 was 'r colSums(pull(mrproftrash, sports_balls.x, year.x=2020, na.rm=TRUE))' #need to fix this
 
 #Problem 3
 This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.
@@ -173,10 +173,13 @@ mutate(
     month=replace(month, month == "12","December"),
     president = recode(prez_gop, '1' = "gop", '0' = "dem"))
 pols_month<-select(pols_month,-c(day,prez_gop,prez_dem))
+
+head(pols_month)
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
+We will use the lubridate package.
 ```{r}
 library(lubridate)
 ```
@@ -202,6 +205,8 @@ snp = read_csv("p8105_hw2_data/snp.csv")%>%
     month=replace(month, month == "11","November"),
     month=replace(month, month == "12","December"))
 snp<-select(snp,-date)
+
+head(snp)
 ```
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
@@ -234,8 +239,11 @@ head(unemployment)
 Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 ```{r}
-pols_month_snp=left_join(pols_month,snp)
-pols_month_snp_unemp=left_join(pols_month_snp,unemployment)
+combo1=left_join(pols_month,snp)%>%
+na.omit
+
+combo2=left_join(combo1,unemployment)%>%
+na.omit
 ```
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
