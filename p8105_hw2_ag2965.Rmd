@@ -18,7 +18,9 @@ library(dplyr)
 
 #Problem 1
 ```{r}
-subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",  col_types=cols(Route8="c", Route9="c", Route10="c", Route11="c"))%>% 
+subway = 
+  read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+  col_types=cols(Route8="c", Route9="c", Route10="c", Route11="c"))%>% 
   janitor::clean_names() %>%
   select(line, station_name, station_latitude, station_longitude, starts_with("route"), entrance_type, entry, exit_only, vending, ada) %>%
   mutate(entry = ifelse(entry == "YES", TRUE, FALSE)) %>%
@@ -31,7 +33,6 @@ subway = read_csv("p8105_hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv"
 view(subway)
 
 sapply(subway,class)
-
 ```
 
 ##Short description of the resulting dataset
@@ -54,18 +55,37 @@ There are 5,148 ADA-compliant subway entrances.
 filter(subway, ada==TRUE)
 ```
 
+
 What proportion of station entrances / exits without vending allow entrance?
-There are '=759/19283' stations with an entry without a machine for vending tickets.
+There are 0.377 stations with an entry without a machine for vending tickets.
 ```{r}
-filter(subway, entry==TRUE)
-filter(subway, entry==TRUE,vending==FALSE)
+subway%>%
+filter(vending=="FALSE")%>%
+pull(entry)%>%
+  mean
 ```
 
-There are '=550/616' stations that are exit only and don't have a machine for vending tickets.
+Reformat data so that route number and route name are distinct variables. 
+
+How many distinct stations serve the A train? There are 60 distinct stations that are served by the A train.
+
+Of the stations that serve the A train, how many are ADA compliant? Of these stations, 17 are ADA compliant.
+
+
 ```{r}
-filter(subway, exit_only==TRUE)
-filter(subway, exit_only==TRUE,vending==FALSE)
+subway %>% 
+  filter(route == "A") %>% 
+  select(station_name, line) %>% 
+  distinct
+
+subway %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
 ```
+
+
+
 
 #Problem 2
 Read and clean the Mr. Trash Wheel sheet:
@@ -96,8 +116,6 @@ mrtrash =
     filter(dumpster>0)
 ```
 
-as.numeric(pull(prob_2_df,logical_vector))
-
 
 Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
 
@@ -123,7 +141,6 @@ bind_rows(mrtrash,proftrash)
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
-###Need to do this!
 The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)`. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
 
 The total weight of trash collected by Professor Trash Wheel was 'r colSums(pull(mrproftrash, weight_tons.y, na.rm=TRUE)' #need to fix this
@@ -136,19 +153,24 @@ This problem uses the FiveThirtyEight data; these data were gathered to create t
 First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
 
 ```{r}
-pols_month = read_csv("p8105_hw2_data/pols-month.csv")%>%
+pols_month= 
+  read_csv("p8105_hw2_data/pols-month.csv")%>%
   janitor::clean_names()%>%
-  remove(prez_dem, prez_gop)
-  separate(col1,into=c('year', 'month', 'day')%>%
+  separate(mon,into=c('year', 'month', 'day', sep="-")%>%
+```
+
+```{r}
+%>%
+  separate(mon,into=c('year', 'month', 'day', sep="-")%>%
   mutate(
     month = replace(month, monthname == "01", "January", "02", "February", "03", "March", "04", "April", "05", "May", "06", "June", "07", "July", "08", "August", "09", "September", "10", "October", "11", "November", "12", "December"))%>%
+  remove(prez_dem, prez_gop)
   president<-president=prez_dem, dem, prez_gop, gop #This is not correct, don't know how to format
   
     ) %>%
     #how to remove variables?
 ```
-
-
+```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
