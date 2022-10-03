@@ -171,22 +171,24 @@ mutate(
     month=replace(month, month == "10","October"),
     month=replace(month, month == "11","November"),
     month=replace(month, month == "12","December"),
-    president = recode(prez_gop, '1' = "gop", '0' = "dem"))%>%
-pols_month<-pols_month[-c(3,4,8)]
+    president = recode(prez_gop, '1' = "gop", '0' = "dem"))
+pols_month<-select(pols_month,-c(day,prez_gop,prez_dem))
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
 ```{r}
+library(lubridate)
+```
+
+```{r}
 snp = read_csv("p8105_hw2_data/snp.csv")%>%
   janitor::clean_names()%>%
+  mutate(date=lubridate::mdy(date))%>%
+  separate(col=date,into=c('year','month','date'), convert=TRUE)%>%
   mutate(
-  date = as.Date(date, format = "%m/%d/%y")) %>%
-  separate(col=date,into=c('month','date','year'), sep="/")%>%
-mutate(
     year=as.integer(year),
     month=as.integer(month),
-    day=as.integer(day),
     month=replace(month, month == "1","January"),
     month=replace(month, month == "2","February"),
     month=replace(month, month == "3","March"),
@@ -198,20 +200,8 @@ mutate(
     month=replace(month, month == "9","September"),
     month=replace(month, month == "10","October"),
     month=replace(month, month == "11","November"),
-    month=replace(month, month == "12","December"),
-    year=replace(year, year == "1","2001"),
-    year=replace(year, year == "2","2002"),
-    year=replace(year, year == "3","2003"),
-    year=replace(year, year == "4","2004"),
-    year=replace(year, year == "5","2005"),
-    year=replace(year, year == "6","2006"),
-    year=replace(year, year == "7","2007"),
-    year=replace(year, year == "8","2008"),
-    year=replace(year, year == "9","2009"),
-    year=replace(year, year == "10","2010"),
-    year=replace(year, year == "11","2011"),
-    year=replace(year, year == "12","2012"))%>%
-arrange(year,month)
+    month=replace(month, month == "12","December"))
+snp<-select(snp,-date)
 ```
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
