@@ -156,7 +156,7 @@ First, clean the data in pols-month.csv. Use separate() to break up the variable
 pols_month= 
   read_csv("p8105_hw2_data/pols-month.csv")%>%
   janitor::clean_names()%>%
-  separate(mon,into=c('year', 'month', 'day'), sep="-")%>%
+  separate(col=mon,into=c('year','month','day'), sep="-")%>%
 mutate(
     month=replace(month, month == "01","January"),
     month=replace(month, month == "02","February"),
@@ -171,26 +171,41 @@ mutate(
     month=replace(month, month == "11","November"),
     month=replace(month, month == "12","December"),
     president = recode(prez_gop, '1' = "gop", '0' = "dem"))%>%
-pols_month= subset(pols_month, select = -c(3,4,8) )
-```
-
-```{r}
-%>%
-  mutate(
-    month = replace(month, monthname == "01", "January", "02", "February", "03", "March", "04", "April", "05", "May", "06", "June", "07", "July", "08", "August", "09", "September", "10", "October", "11", "November", "12", "December"))%>%
-  remove(prez_dem, prez_gop)
-  president<-president=prez_dem, dem, prez_gop, gop #This is not correct, don't know how to format
-  
-    ) %>%
-    #how to remove variables?
-```
+pols_month= subset(pols_month, select = -c(3,4,8))
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
 ```{r}
 snp = read_csv("p8105_hw2_data/snp.csv") %>%
-  janitor::clean_names()
+  janitor::clean_names()%>%
+  separate(col=date,into=c('year','month','day'), sep="/")%>%
+mutate(
+    month=replace(month, month == "1","January"),
+    month=replace(month, month == "2","February"),
+    month=replace(month, month == "3","March"),
+    month=replace(month, month == "4","April"),
+    month=replace(month, month == "5","May"),
+    month=replace(month, month == "6","June"),
+    month=replace(month, month == "7","July"),
+    month=replace(month, month == "8","August"),
+    month=replace(month, month == "9","September"),
+    month=replace(month, month == "10","October"),
+    month=replace(month, month == "11","November"),
+    month=replace(month, month == "12","December"),
+    year=replace(year, year == "1","2001"),
+    year=replace(year, year == "2","2002"),
+    year=replace(year, year == "3","2003"),
+    year=replace(year, year == "4","2004"),
+    year=replace(year, year == "5","2005"),
+    year=replace(year, year == "6","2006"),
+    year=replace(year, year == "7","2007"),
+    year=replace(year, year == "8","2008"),
+    year=replace(year, year == "9","2009"),
+    year=replace(year, year == "10","2010"),
+    year=replace(year, year == "11","2011"))%>%
+arrange(year,month)
+```
 
 ```
 
