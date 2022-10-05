@@ -33,6 +33,7 @@ subway =
 view(subway)
 
 sapply(subway,class)
+head(subway)
 ```
 
 ##Short description of the resulting dataset
@@ -116,8 +117,11 @@ mrtrash =
     as.integer())%>%
   filter(dumpster>0)
 sum(pull(mrtrash,sports_balls))
+
+head(mrtrash)
 ```
 
+There are 6877 sports balls in Mr. Trash Wheel.
 
 Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
 
@@ -129,6 +133,8 @@ proftrash =
   mutate(
     dumpster=as.numeric(dumpster))%>%
 filter(dumpster>0)
+
+head(proftrash)
 ```
 
 
@@ -136,15 +142,17 @@ We will combine the Mr. Trash Wheel and Professor Trash Wheel datasets.
 ```{r}
 mrproftrash=
 full_join(mrtrash,proftrash,by="dumpster")
+
+head(mrproftrash)
 ```
 
 #Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
 The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)` columns. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
 
-The total weight of trash collected by Professor Trash Wheel was `r sum(pull(proftrash,weight_tons))`
+The total weight of trash collected by Professor Trash Wheel was `r sum(pull(proftrash,weight_tons))`.
 
-The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r sum(pull(filter(mrtrash, year==2020), sports_balls))` 
+The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r sum(pull(filter(mrtrash, year==2020), sports_balls))`. 
 
 #Problem 3
 This problem uses the FiveThirtyEight data; these data were gathered to create the interactive graphic on this page. In particular, we’ll use the data in pols-month.csv, unemployment.csv, and snp.csv. Our goal is to merge these into a single data frame using year and month as keys across datasets.
@@ -180,7 +188,7 @@ head(pols_month)
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
-We will use the lubridate package.
+We will use the lubridate package to standardize the dates across the datasets, as the snp dataset formats years differently from the pols_month and unemployment datasets.
 ```{r}
 library(lubridate)
 ```
@@ -212,6 +220,7 @@ head(snp)
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
+We will tidy the dataset.
 ```{r}
 unemployment = read_csv("p8105_hw2_data/unemployment.csv") %>%
   janitor::clean_names()%>%
@@ -242,13 +251,13 @@ Join the datasets by merging snp into pols, and merging unemployment into the re
 ```{r}
 combo1=left_join(pols_month,snp)%>%
 na.omit
+head(combo1)
 
 combo2=left_join(combo1,unemployment)%>%
 na.omit
+head(combo2)
 ```
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
 The pols_month dataset contains month, year, and polling data for the senators, governors, and presidents for democrat and GOP candidates. The snp dataset contains the stock price closing at each month and year given. The key variables are month, year, and stock price closing. The unemployment dataset contains the unemployment rate for each month and year given. The key variables are month, year, and the unemployment rate. The first combined dataset (combo1) contains the polling data and the stock price closing for each month and year given. There are `r nrow(combo1)` rows and `r ncol(combo2)` columns in the first combined dataset. The range of years is `r range(pull(combo1,year))`. The second combined dataset (combo2) contains the polling data, stock price, and unemployment rate for each month and year given. There are `r nrow(combo2)` rows and `r ncol(combo2)` columns in the second combined dataset. The range of years is `r range(pull(combo2,year))`.  
-
-Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.
