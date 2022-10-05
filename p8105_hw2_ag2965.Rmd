@@ -105,7 +105,7 @@ mrtrash =
   drop_na(dumpster)
 ```
 
-3. Below, we are rounding the number of sports balls to the nearest integer and converting the results to an integer variable (using as.integer).
+3. Below, we are rounding the number of sports balls to the nearest integer and converting the results to an integer variable (using as.integer). There are 6877 sports balls in Mr. Trash Wheel.
 
 ```{r}
 mrtrash = 
@@ -121,7 +121,6 @@ sum(pull(mrtrash,sports_balls))
 head(mrtrash)
 ```
 
-There are 6877 sports balls in Mr. Trash Wheel.
 
 Use a similar process to import, clean, and organize the data for Professor Trash Wheel, and combine this with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to both datasets before combining.
 
@@ -146,8 +145,9 @@ full_join(mrtrash,proftrash,by="dumpster")
 head(mrproftrash)
 ```
 
-#Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
+#Description of Datasets
 The dataset that results when combining Mr. Trash Wheel and Professor Trash Wheel has `r nrow(mrproftrash)` rows and `r ncol(mrproftrash)` columns. Key variables include dumpster number, month, year and date of trash collection, weight in tons and volume in cubic yards of trash collection. Type of trash collected, including number of plastic bottles, polystyrene, cigarette butts, glass bottles, grocery bags, chip bags, sports balls, homes powered. 
 
 The total weight of trash collected by Professor Trash Wheel was `r sum(pull(proftrash,weight_tons))`.
@@ -260,4 +260,5 @@ head(combo2)
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
+#Description of Datasets
 The pols_month dataset contains month, year, and polling data for the senators, governors, and presidents for democrat and GOP candidates. The snp dataset contains the stock price closing at each month and year given. The key variables are month, year, and stock price closing. The unemployment dataset contains the unemployment rate for each month and year given. The key variables are month, year, and the unemployment rate. The first combined dataset (combo1) contains the polling data and the stock price closing for each month and year given. There are `r nrow(combo1)` rows and `r ncol(combo2)` columns in the first combined dataset. The range of years is `r range(pull(combo1,year))`. The second combined dataset (combo2) contains the polling data, stock price, and unemployment rate for each month and year given. There are `r nrow(combo2)` rows and `r ncol(combo2)` columns in the second combined dataset. The range of years is `r range(pull(combo2,year))`.  
