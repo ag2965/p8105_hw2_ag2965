@@ -99,7 +99,7 @@ use reasonable variable names
 
 ```{r}
 mrtrash = 
-  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Mr. Trash Wheel", range= "A2:N550")%>%
+  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Mr. Trash Wheel", range= "A2:N549")%>%
   janitor::clean_names()%>%
   drop_na(dumpster)
 ```
@@ -108,7 +108,7 @@ mrtrash =
 
 ```{r}
 mrtrash = 
-  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Mr. Trash Wheel", range= "A2:N550")%>%
+  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Mr. Trash Wheel", range= "A2:N549")%>%
   janitor::clean_names()%>%
   mutate(
     dumpster = as.numeric(dumpster),
@@ -124,7 +124,7 @@ Use a similar process to import, clean, and organize the data for Professor Tras
 We will import, clean, organize the data for Professor Trash Wheel.
 ```{r}
 proftrash = 
-  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Professor Trash Wheel", range= "A2:M97")%>%
+  readxl::read_excel("p8105_hw2_data/TrashWheel.xlsx", sheet="Professor Trash Wheel", range= "A2:M96")%>%
   janitor::clean_names()%>%
   mutate(
     dumpster=as.numeric(dumpster))%>%
@@ -135,7 +135,7 @@ filter(dumpster>0)
 We will combine the Mr. Trash Wheel and Professor Trash Wheel datasets.
 ```{r}
 mrproftrash=
-left_join(mrtrash,proftrash,by="dumpster")
+full_join(mrtrash,proftrash,by="dumpster")
 ```
 
 #Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
@@ -249,6 +249,6 @@ na.omit
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
-The pols_month dataset contains month, year, and polling data for the senators, governors, and presidents for democrat and GOP candidates. The snp dataset contains the stock price closing at each month and year given. The key variables are month, year, and stock price closing. The unemployment dataset contains the unemployment rate for each month and year given. The key variables are month, year, and the unemployment rate. The first combined dataset (combo1) contains the polling data and the stock price closing for each month and year given. There are `r nrow(combo1)` rows and `r ncol(combo2)` columns in this dataset. The second combined dataset (combo2) contins the polling data, stock price, and unemployment rate for each month and year given. The range of years is 'r range(combo1,year)'
+The pols_month dataset contains month, year, and polling data for the senators, governors, and presidents for democrat and GOP candidates. The snp dataset contains the stock price closing at each month and year given. The key variables are month, year, and stock price closing. The unemployment dataset contains the unemployment rate for each month and year given. The key variables are month, year, and the unemployment rate. The first combined dataset (combo1) contains the polling data and the stock price closing for each month and year given. There are `r nrow(combo1)` rows and `r ncol(combo2)` columns in the first combined dataset. The range of years is `r range(pull(combo1,year))`. The second combined dataset (combo2) contains the polling data, stock price, and unemployment rate for each month and year given. There are `r nrow(combo2)` rows and `r ncol(combo2)` columns in the second combined dataset. The range of years is `r range(pull(combo2,year))`.  
 
 Note: we could have used a date variable as a key instead of creating year and month keys; doing so would help with some kinds of plotting, and be a more accurate representation of the data. Date formats are tricky, though. For more information check out the lubridate package in the tidyverse.
